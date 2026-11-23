@@ -1,0 +1,20 @@
+name: keepalive
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # tous les jours à 6h UTC
+  workflow_dispatch: {}
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lire une table pour garder le projet Supabase actif
+        run: |
+          curl -sf "${SUPABASE_URL}/rest/v1/person?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            > /dev/null
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
